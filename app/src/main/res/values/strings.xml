@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">NDK</string>
+
+    <string-array name="sink_array">
+        <item>Surface 1</item>
+        <item>Surface 2</item>
+        <item>SurfaceTexture 1</item>
+        <item>SurfaceTexture 2</item>
+    </string-array>
+    <string-array name="source_array">
+        <item>testfile.mp4</item>
+    </string-array>
+
+</resources>

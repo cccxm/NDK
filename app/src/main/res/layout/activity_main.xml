@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.github.cccxm.ndk.MainActivity">
+
+    <Button
+        android:id="@+id/btn_hello_jni"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hello JNI" />
+
+    <Button
+        android:id="@+id/btn_jni_callback"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="JNI回调Android方法" />
+
+    <Button
+        android:id="@+id/btn_jni_bitmap"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="处理Bitmap" />
+</LinearLayout>
