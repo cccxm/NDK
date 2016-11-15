@@ -19,7 +19,7 @@ add_library(app-glue STATIC
 add_library(ndk-lib SHARED
             src/main/cpp/JniUtil.cpp
             src/main/cpp/hello-jni.cpp
-            src/main/cpp/jni-callback.cpp
+            src/main/cpp/hello-java.cpp
             src/main/cpp/native-activity.cpp
             src/main/cpp/bitmap.cpp)
 

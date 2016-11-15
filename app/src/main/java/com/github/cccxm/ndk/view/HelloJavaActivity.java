@@ -2,18 +2,17 @@ package com.github.cccxm.ndk.view;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.github.cccxm.ndk.R;
-import com.github.cccxm.ndk.lib.JniCallbackLib;
 
 /**
  * 陈小默 16/11/1.
  */
 
-public class JniCallbackActivity extends AppCompatActivity {
-    private int count = 0;
+public class HelloJavaActivity extends AppCompatActivity {
     private TextView tv;
 
     @Override
@@ -26,17 +25,14 @@ public class JniCallbackActivity extends AppCompatActivity {
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JniCallbackLib.callback(JniCallbackActivity.this);
+                callback();
             }
         });
     }
 
-    public void setText(int nCount) {
-        count = nCount;
+    public void setText(int count) {
         tv.setText("" + count);
     }
 
-    public int getCount() {
-        return count;
-    }
+    public native void callback();
 }

@@ -19,14 +19,15 @@
 //
 // Created by 陈小默 on 16/11/8.
 //
-#include "JniUtil.h"
+#include <jni.h>
+
+static int count;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_github_cccxm_ndk_lib_JniCallbackLib_callback(JNIEnv *env, jclass type, jobject activity) {
-    jclass cla_activity = env->FindClass("com/github/cccxm/ndk/view/JniCallbackActivity");
-    jmethodID m_getCount = env->GetMethodID(cla_activity, "getCount", "()I");
-    int count = env->CallIntMethod(activity, m_getCount);
-    jmethodID m_setText = env->GetMethodID(cla_activity, "setText", "(I)V");
-    env->CallVoidMethod(activity, m_setText, count + 1);
+Java_com_github_cccxm_ndk_view_HelloJavaActivity_callback(JNIEnv *env,
+                                                          jobject activity) {
+    jclass activityClass = env->GetObjectClass(activity);
+    jmethodID method = env->GetMethodID(activityClass, "setText", "(I)V");
+    env->CallVoidMethod(activity, method, count += 1);
 }

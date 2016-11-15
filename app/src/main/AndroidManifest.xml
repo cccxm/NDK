@@ -20,7 +20,7 @@
             android:name=".view.HelloJniActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
-            android:name=".view.JniCallbackActivity"
+            android:name=".view.HelloJavaActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity
             android:name="android.app.NativeActivity"

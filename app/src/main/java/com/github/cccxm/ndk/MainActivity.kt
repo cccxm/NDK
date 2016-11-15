@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.github.cccxm.ndk.view.HelloJniActivity
-import com.github.cccxm.ndk.view.JniCallbackActivity
+import com.github.cccxm.ndk.view.HelloJavaActivity
 import com.github.cccxm.ndk.view.NBitmapActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
         btn_jni_callback.setOnClickListener {
-            val intent = Intent(this, JniCallbackActivity::class.java)
+            val intent = Intent(this, HelloJavaActivity::class.java)
             startActivity(intent)
         }
         btn_jni_bitmap.setOnClickListener {

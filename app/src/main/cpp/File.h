@@ -29,8 +29,8 @@ class ByteArray;
 
 class File;
 
-typedef ifstream;
-typedef ofstream;
+//typedef ifstream;
+//typedef ofstream;
 
 class InputStream {
 public:
