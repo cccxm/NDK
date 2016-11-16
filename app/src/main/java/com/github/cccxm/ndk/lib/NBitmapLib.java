@@ -1,6 +1,7 @@
 package com.github.cccxm.ndk.lib;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 /**
  * project:NDK
@@ -25,25 +26,26 @@ public class NBitmapLib {
     public static native void renderGray(Bitmap bitmap);
 
     public static void javaRenderGray(Bitmap bitmap) {
+        int MODEL = 0xFF;
         int height = bitmap.getHeight();
         int width = bitmap.getWidth();
 
-        int MODEL = 0xFF;
+        int pixelArray[] = new int[width * height];
+        bitmap.getPixels(pixelArray, 0, width, 0, 0, width, height);
         int color;
         int av;
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                av = 0;
-                color = bitmap.getPixel(x, y);
-                av += color & MODEL;
-                av += (color >> 8) & MODEL;
-                av += (color >> 16) & MODEL;
-                av /= 3;
-                color = 0xFF00 + av;
-                color = (color << 8) + av;
-                color = (color << 8) + av;
-                bitmap.setPixel(x, y, color);
-            }
+        for (int i = 0; i < pixelArray.length; i++) {
+            color = pixelArray[i];
+            av = 0;
+            av += color & MODEL;
+            av += (color >> 8) & MODEL;
+            av += (color >> 16) & MODEL;
+            av /= 3;
+            color = 0xFF00 + av;
+            color = (color << 8) + av;
+            color = (color << 8) + av;
+            pixelArray[i] = color;
         }
+        bitmap.setPixels(pixelArray, 0, width, 0, 0, width, height);
     }
 }

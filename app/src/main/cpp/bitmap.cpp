@@ -23,12 +23,14 @@
 
 #define ARGB_4444
 
+#include <android/bitmap.h>
 #include "Bitmap.h"
 
 extern "C"
-JNIEXPORT void JNICALL Java_com_github_cccxm_ndk_lib_NBitmapLib_renderGray(JNIEnv *env,
-                                                                           jobject obj,
-                                                                           jobject bitmap) {
+JNIEXPORT void JNICALL
+Java_com_github_cccxm_ndk_lib_NBitmapLib_renderGray(JNIEnv *env,
+                                                    jobject obj,
+                                                    jobject bitmap) {
     Bitmap bm(env, bitmap);
     ABsize height = bm.getHeight();
     ABsize width = bm.getWidth();
@@ -36,18 +38,20 @@ JNIEXPORT void JNICALL Java_com_github_cccxm_ndk_lib_NBitmapLib_renderGray(JNIEn
     const APixel MODEL = 0xF;
     APixel color;
     APixel av;
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            av = 0;
-            color = bm[y][x];
-            av += (color >>= 4) & MODEL;
-            av += (color >>= 4) & MODEL;
-            av += (color >> 4) & MODEL;
-            av /= 3;
-            color = av;
-            color = (color << 4) + av;
-            color = (color << 4) + av;
-            bm[y][x] = color << 4;
-        }
+
+    APixel *pixelArray = bm;
+    ABsize length = height * width;
+    for (ABsize i = 0; i < length; i++) {
+        av = 0;
+        color = pixelArray[i];
+        av += (color >>= 4) & MODEL;
+        av += (color >>= 4) & MODEL;
+        av += (color >> 4) & MODEL;
+        av /= 3;
+        color = av;
+        color = (color << 4) + av;
+        color = (color << 4) + av;
+        pixelArray[i] = color << 4;
     }
 }
+#undef ARGB_4444
