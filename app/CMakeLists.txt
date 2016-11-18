@@ -23,13 +23,10 @@ add_library(ndk-lib SHARED
             src/main/cpp/native-activity.cpp
             src/main/cpp/bitmap.cpp)
 
-target_include_directories(ndk-lib PRIVATE
-                           ${ANDROID_NDK}/sources/android/native_app_glue)
 
 target_link_libraries(ndk-lib
                       android
                       jnigraphics
-                      app-glue
                       EGL
                       log
                       m)
