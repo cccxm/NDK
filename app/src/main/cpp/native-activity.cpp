@@ -22,57 +22,147 @@
 #define LOG_TAG "native-activity"
 
 #include "JniUtil.h"
+#include "native-activity.h"
 
-typedef struct {
-    int number;
-} Saved, *_Saved;
+void
+ANativeActivity_onCreate(ANativeActivity *activity, void *savedState, size_t savedStateSize) {
+    ALOGE("onCreate");
+    bindLifeCycle(activity);
+}
 
-void Activity::onCreate(Bundle savedInstanceState) {
-    //ALOGE("onCreate");
-    if (savedInstanceState != NULL)
-        bundle = savedInstanceState;
-    else {
-        bundle = new Saved;
-        memset(bundle, 0, sizeof(Saved));
+void
+onStart(ANativeActivity *activity) {
+    ALOGE("onStart");
+}
+
+void
+onResume(ANativeActivity *activity) {
+    ALOGE("onResume");
+}
+
+void *
+onSaveInstanceState(ANativeActivity *activity, size_t *outSize) {
+    ALOGE("onSaveInstanceState");
+    return NULL;
+}
+
+void
+onPause(ANativeActivity *activity) {
+    ALOGE("onPause");
+}
+
+void
+onStop(ANativeActivity *activity) {
+    ALOGE("onStop");
+}
+
+void
+onDestroy(ANativeActivity *activity) {
+    ALOGE("onDestroy");
+}
+
+void
+onWindowFocusChanged(ANativeActivity *activity, int hasFocus) {
+    ALOGE("onWindowFocusChanged");
+}
+
+void
+onNativeWindowCreated(ANativeActivity *activity, ANativeWindow *window) {
+    ALOGE("onNativeWindowCreated");
+}
+
+void
+onNativeWindowDestroyed(ANativeActivity *activity, ANativeWindow *window) {
+    ALOGE("onNativeWindowDestroyed");
+}
+
+
+static bool isLoop = false;
+static pthread_t loopID;
+
+void *
+looper(void *args) {
+    ANativeActivity *activity = (ANativeActivity *) args;
+    AInputQueue *queue = (AInputQueue *) activity->instance;
+    AInputEvent *event = NULL;
+    while (isLoop) {
+        if (!AInputQueue_hasEvents(queue))
+            continue;
+        AInputQueue_getEvent(queue, &event);
+        switch (AInputEvent_getType(event)) {
+            case AINPUT_EVENT_TYPE_MOTION: {
+                switch (AMotionEvent_getAction(event)) {
+                    case AMOTION_EVENT_ACTION_DOWN:{
+                        float x = AMotionEvent_getX(event, 0);
+                        float y = AMotionEvent_getY(event, 0);
+                        ALOGE("X:%f,Y:%f", x, y);
+                        break;
+                    }
+                    case AMOTION_EVENT_ACTION_UP:{
+                        break;
+                    }
+                }
+                break;
+            }
+            case AINPUT_EVENT_TYPE_KEY: {
+                switch (AKeyEvent_getAction(event)) {
+                    case AKEY_EVENT_ACTION_DOWN: {
+                        switch (AKeyEvent_getKeyCode(event)) {
+                            case AKEYCODE_BACK: {
+                                ANativeActivity_finish(activity);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case AKEY_EVENT_ACTION_UP: {
+                        break;
+                    }
+                }
+            }
+        }
+        AInputQueue_finishEvent(queue, event, 1);
     }
+    return args;
 }
 
-void Activity::onStart() {
-    //ALOGE("onStart");
+void
+onInputQueueCreated(ANativeActivity *activity, AInputQueue *queue) {
+    ALOGE("onInputQueueCreated");
+    isLoop = true;
+    activity->instance = (void *) queue;
+    pthread_create(&loopID, NULL, looper, activity);
 }
 
-void Activity::onResume() {
-    //ALOGE("onResume");
-    _Saved saved = (_Saved) bundle;
-    ALOGE("current num is %d", saved->number);
+void
+onInputQueueDestroyed(ANativeActivity *activity, AInputQueue *queue) {
+    ALOGE("onInputQueueDestroyed");
+    isLoop = false;
 }
 
-void Activity::onPause() {
-    //ALOGE("onPause");
+void
+onConfigurationChanged(ANativeActivity *activity) {
+    ALOGE("onConfigurationChanged");
 }
 
-void Activity::onStop() {
-    //ALOGE("onStop");
+void
+onLowMemory(ANativeActivity *activity) {
+    ALOGE("onLowMemory");
 }
 
-void Activity::onDestroy() {
-    //ALOGE("onDestroy");
-}
-
-Bundle Activity::onSaveInstanceState() {
-    //ALOGE("onSaveInstanceState");
-    return bundle;
-}
-
-Abool Activity::onTouchEvent(AInputEvent *event) {
-    if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
-//        float x = AMotionEvent_getX(event, 0);
-//        float y = AMotionEvent_getY(event, 0);
-//        ALOGE("X:%f,Y:%f", x, y);
-        _Saved saved = (_Saved) bundle;
-        saved->number += 1;
-        ALOGE("current num is %d", saved->number);
-        return ATRUE;
-    }
-    return AFALSE;
+void
+bindLifeCycle(ANativeActivity *activity) {
+    activity->callbacks->onStart = onStart;
+    activity->callbacks->onResume = onResume;
+    activity->callbacks->onSaveInstanceState = onSaveInstanceState;
+    activity->callbacks->onPause = onPause;
+    activity->callbacks->onStop = onStop;
+    activity->callbacks->onDestroy = onDestroy;
+    activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
+    activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
+    activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
+    activity->callbacks->onInputQueueCreated = onInputQueueCreated;
+    activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
+    activity->callbacks->onConfigurationChanged = onConfigurationChanged;
+    activity->callbacks->onLowMemory = onLowMemory;
 }

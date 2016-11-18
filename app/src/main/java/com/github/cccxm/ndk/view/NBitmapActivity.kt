@@ -27,35 +27,32 @@ class NBitmapActivity : AppCompatActivity() {
 
         startTime = System.currentTimeMillis()
         NBitmapLib.javaRenderGray(java_bitmap)
+        //kotlinRenderGray(java_bitmap)
         Log.e("---time----", "Java Time:${System.currentTimeMillis() - startTime}")
         java_to_gray.setImageBitmap(java_bitmap)
     }
 
-
-    fun renderGray(mBitmap: Bitmap) {
+    fun kotlinRenderGray(bitmap: Bitmap) {
         val MODEL = 0xFF
-        val height = mBitmap.height
-        val width = mBitmap.width
-        val pixelArray = IntArray(height * width)
-        var index = 0
-        for (y in 0..height - 1)
-            for (x in 0..width - 1) {
-                pixelArray[index++] = mBitmap.getPixel(x, y)
-            }
-        var av: Int
+        val height = bitmap.height
+        val width = bitmap.width
+
+        val pixelArray = IntArray(width * height)
+        bitmap.getPixels(pixelArray, 0, width, 0, 0, width, height)
         var color: Int
+        var av: Int
         for (i in pixelArray.indices) {
-            av = 0
             color = pixelArray[i]
+            av = 0
             av += color and MODEL
-            av += (color shr 8) and MODEL
-            av += (color shr 16) and MODEL
+            av += color shr 8 and MODEL
+            av += color shr 16 and MODEL
             av /= 3
             color = 0xFF00 + av
             color = (color shl 8) + av
             color = (color shl 8) + av
             pixelArray[i] = color
         }
-        mBitmap.setPixels(pixelArray, 0, width, 0, 0, width, height)
+        bitmap.setPixels(pixelArray, 0, width, 0, 0, width, height)
     }
 }

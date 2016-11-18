@@ -22,35 +22,6 @@
 #include "JniUtil.h"
 #include <fstream>
 
-static Bundle bundle = NULL;
-
-void android_main(struct android_app *state) {
-    Activity activity;
-    app_dummy();
-    activity.context = state;
-    state->userData = &activity;
-    state->onAppCmd = dispatch;
-    state->onInputEvent = onTouchEvent;
-    activity.onCreate(bundle);
-    bundle = NULL;
-
-    AlooperId ident;
-    int events;
-    struct android_poll_source *source;
-    while (ATRUE) {
-        while ((ident = ALooper_pollAll(AFALSE, NULL, &events,
-                                        (void **) &source)) >= 0) {
-            activity.ID = ident;
-            if (source != NULL) {
-                source->process(state, source);
-            }
-            if (state->destroyRequested != 0) {
-                return;
-            }
-        }
-    }
-}
-
 void
 toString(int value, char *buffer, int radix) {
     char index[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -175,45 +146,6 @@ StringBuilder
 String &
 StringBuilder::toString() {
     return *(new String(_buffer));
-}
-
-void
-dispatch(struct android_app *app, ACMD cmd) {
-    Activity *activity = (Activity *) app->userData;
-    switch (cmd) {
-        case APP_CMD_SAVE_STATE: {
-            bundle = activity->onSaveInstanceState();
-            break;
-        }
-        case APP_CMD_START: {
-            activity->onStart();
-            break;
-        }
-        case APP_CMD_STOP: {
-            activity->onStop();
-            break;
-        }
-        case APP_CMD_RESUME: {
-            activity->onResume();
-            break;
-        }
-        case APP_CMD_PAUSE: {
-            activity->onPause();
-            break;
-        }
-        case APP_CMD_DESTROY: {
-            activity->onDestroy();
-            break;
-        }
-        default:
-            break;
-    }
-}
-
-Abool
-onTouchEvent(struct android_app *app, AInputEvent *event) {
-    Activity *activity = (Activity *) app->userData;
-    return activity->onTouchEvent(event);
 }
 
 ByteArray::ByteArray(int length, byte def) : _length(length) {

@@ -34,7 +34,6 @@ using namespace std;
 
 #include "Lang.h"
 #include "String.h"
-#include "Activity.h"
 #include "File.h"
 
 #ifndef LOG_TAG
