@@ -23,6 +23,7 @@
 
 #include "JniUtil.h"
 #include "native-activity.h"
+#include "triangle.h"
 
 void
 ANativeActivity_onCreate(ANativeActivity *activity, void *savedState, size_t savedStateSize) {
@@ -66,14 +67,42 @@ onWindowFocusChanged(ANativeActivity *activity, int hasFocus) {
     ALOGE("onWindowFocusChanged");
 }
 
+static bool triangleShowing;
+static pthread_t triangleID;
+
+void *
+triangleView(void *args) {
+    TriangleContext *context = (TriangleContext *) args;
+    if (triangleCreateWindow(context) && triangleInit(context)) {
+        while (triangleShowing) {
+            triangleStep(context);
+            eglSwapBuffers(context->eglDisplay, context->eglSurface);
+        }
+        triangleDestroy(context);
+    }
+    else
+        ALOGE("EGL window create error");
+    return args;
+}
+
 void
 onNativeWindowCreated(ANativeActivity *activity, ANativeWindow *window) {
     ALOGE("onNativeWindowCreated");
+    triangleShowing = true;
+    TriangleContext *context = new TriangleContext;
+    memset(context, 0, sizeof(context));
+    context->nativeActivity = activity;
+    context->nativeWindow = window;
+    if (0 != pthread_create(&triangleID, NULL, triangleView, context)) {
+        ALOGE("Thread create error");
+        delete context;
+    }
 }
 
 void
 onNativeWindowDestroyed(ANativeActivity *activity, ANativeWindow *window) {
     ALOGE("onNativeWindowDestroyed");
+    triangleShowing = false;
 }
 
 
@@ -92,13 +121,13 @@ looper(void *args) {
         switch (AInputEvent_getType(event)) {
             case AINPUT_EVENT_TYPE_MOTION: {
                 switch (AMotionEvent_getAction(event)) {
-                    case AMOTION_EVENT_ACTION_DOWN:{
+                    case AMOTION_EVENT_ACTION_DOWN: {
                         float x = AMotionEvent_getX(event, 0);
                         float y = AMotionEvent_getY(event, 0);
                         ALOGE("X:%f,Y:%f", x, y);
                         break;
                     }
-                    case AMOTION_EVENT_ACTION_UP:{
+                    case AMOTION_EVENT_ACTION_UP: {
                         break;
                     }
                 }
@@ -141,11 +170,6 @@ onInputQueueDestroyed(ANativeActivity *activity, AInputQueue *queue) {
 }
 
 void
-onConfigurationChanged(ANativeActivity *activity) {
-    ALOGE("onConfigurationChanged");
-}
-
-void
 onLowMemory(ANativeActivity *activity) {
     ALOGE("onLowMemory");
 }
@@ -163,6 +187,5 @@ bindLifeCycle(ANativeActivity *activity) {
     activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
     activity->callbacks->onInputQueueCreated = onInputQueueCreated;
     activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
-    activity->callbacks->onConfigurationChanged = onConfigurationChanged;
     activity->callbacks->onLowMemory = onLowMemory;
 }

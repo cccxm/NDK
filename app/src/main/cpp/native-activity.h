@@ -56,13 +56,17 @@ void onWindowFocusChanged(ANativeActivity *activity, int hasFocus);
 
 void onNativeWindowCreated(ANativeActivity *activity, ANativeWindow *window);
 
+//void onNativeWindowResized(ANativeActivity *activity, ANativeWindow *window);
+
+//void onNativeWindowRedrawNeeded(ANativeActivity *activity, ANativeWindow *window);
+
 void onNativeWindowDestroyed(ANativeActivity *activity, ANativeWindow *window);
 
 void onInputQueueCreated(ANativeActivity *activity, AInputQueue *queue);
 
 void onInputQueueDestroyed(ANativeActivity *activity, AInputQueue *queue);
 
-void onConfigurationChanged(ANativeActivity *activity);
+//void onConfigurationChanged(ANativeActivity *activity);
 
 void onLowMemory(ANativeActivity *activity);
 

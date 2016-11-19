@@ -21,12 +21,14 @@ add_library(ndk-lib SHARED
             src/main/cpp/hello-jni.cpp
             src/main/cpp/hello-java.cpp
             src/main/cpp/native-activity.cpp
+            src/main/cpp/triangle.cpp
             src/main/cpp/bitmap.cpp)
 
 
 target_link_libraries(ndk-lib
                       android
                       jnigraphics
+                      ${OPENGL_LIB}
                       EGL
                       log
                       m)
